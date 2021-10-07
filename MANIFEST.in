@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include alfarsi_erpnext *.css
+recursive-include alfarsi_erpnext *.csv
+recursive-include alfarsi_erpnext *.html
+recursive-include alfarsi_erpnext *.ico
+recursive-include alfarsi_erpnext *.js
+recursive-include alfarsi_erpnext *.json
+recursive-include alfarsi_erpnext *.md
+recursive-include alfarsi_erpnext *.png
+recursive-include alfarsi_erpnext *.py
+recursive-include alfarsi_erpnext *.svg
+recursive-include alfarsi_erpnext *.txt
+recursive-exclude alfarsi_erpnext *.pyc
