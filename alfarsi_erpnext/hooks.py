@@ -18,7 +18,8 @@ app_license = "MIT"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/alfarsi_erpnext/css/alfarsi_erpnext.css"
-# web_include_js = "/assets/alfarsi_erpnext/js/alfarsi_erpnext.js"
+web_include_js = ["/assets/js/alfarsi-erpnext.min.js", "assets/js/dialog.min.js",
+	"assets/js/control.min.js", "assets/js/form.min.js"]
 
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "alfarsi_erpnext/public/scss/website"

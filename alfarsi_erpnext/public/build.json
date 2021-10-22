@@ -1,0 +1,5 @@
+{
+	"js/alfarsi-erpnext.min.js": [
+		"public/js/quick_order.js"
+	]
+}
