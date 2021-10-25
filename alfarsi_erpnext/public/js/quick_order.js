@@ -35,8 +35,8 @@ erpnext.QuickOrder = class {
 				<tr>
 					<th>No.</th>
 					<th>Item</th>
-					<th>Price</th>
-					<th>Qty</th>
+					<th style="width: 20%">Price</th>
+					<th style="width: 10%">Qty</th>
 					<th></th>
 				</tr>
 				<tfoot>
@@ -71,7 +71,7 @@ erpnext.QuickOrder = class {
 						placeholder="Enter SKU">
 						</input>
 				</td>
-				<td></td>
+				<td id=${"price-" + row_id} class="price"></td>
 				<td>
 					<input id=${"qty-input-" + row_id} type="number" min="0"
 						class="form-control mr-3 w-100 font-md"
@@ -87,12 +87,42 @@ erpnext.QuickOrder = class {
 			</tr>
 		`);
 
+		this.bind_item_input_event();
 		this.bind_delete_action();
 	}
 
 	bind_button_actions() {
 		this.bind_add_row();
 		this.bind_add_to_cart();
+	}
+
+	bind_item_input_event() {
+		var me = this;
+
+		this.cart_items_section.find(".item-input").on("change", (e) => {
+			let $item_input = $(e.currentTarget);
+			let item_code = $item_input.val();
+			let id = $item_input.attr("id");
+
+			if (!item_code) return;
+
+			frappe.call({
+				method: "alfarsi_erpnext.alfarsi_erpnext.api.get_price",
+				args: {
+					item_code: item_code,
+				},
+				callback: (result) => {
+					if (!result || result.exc || !result.message) {
+						me.render_error_feedback();
+					} else {
+						let price = result.message;
+						if (price !== "NA") {
+							$("#price-" + id).text(price);
+						}
+					}
+				}
+			})
+		})
 	}
 
 	bind_add_row() {
@@ -103,7 +133,7 @@ erpnext.QuickOrder = class {
 
 	bind_delete_action() {
 		this.cart_items_section.find(".btn-delete-row").on("click", (e) => {
-			const $delete_btn = $(e.currentTarget);
+			let $delete_btn = $(e.currentTarget);
 			let id = $delete_btn.attr("id");
 			let row_id = "item-row-" + id;
 
@@ -153,8 +183,9 @@ erpnext.QuickOrder = class {
 	}
 
 	render_error_feedback(msg) {
-		msg = msg || "Something went wrong. Please refresh or contact us.";
 		let feedback_area = this.dialog.get_field("feedback").$wrapper;
+		msg = msg || "Something went wrong. Please refresh or contact us.";
+
 		feedback_area.empty();
 		feedback_area.append(`
 			<div class="mt-4 w-100 alert alert-error font-md" style="padding: 0.5rem 0.5rem;">
@@ -169,7 +200,7 @@ erpnext.QuickOrder = class {
 		feedback_area.remove();
 
 		this.cart_items_section.html(`
-			<div class="text-center">
+			<div class="text-center" style="padding: 3rem; font-size: 20px;">
 				<svg class="icon icon-lg" style="width: 25px; height: 25px;">
 					<use href="#icon-solid-success"></use>
 				</svg>
