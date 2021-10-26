@@ -26,6 +26,11 @@ Rows in this popup can be added or deleted.
   ![photo_2021-10-26 13 13 58](https://user-images.githubusercontent.com/25857446/138832259-2780ba9a-dfc8-4e0c-9113-41ee530688b1.jpeg)
 </details>
 
+## Redirect to Sales Order from Quotation
+- In cases where some items already have pre-negotiated prices, while other's dont: items that have prices are auto-picked into a Sales Order.
+- Users are given feedback on the portal if a Sales order is generated against the current Quotation.
+  <img width="1265" alt="Screenshot 2021-10-26 at 6 33 52 PM" src="https://user-images.githubusercontent.com/25857446/138888235-e790946e-999b-490f-822d-4d5731a97db8.png">
+
 #### License
 
 MIT
