@@ -3,7 +3,7 @@
 
 A custom app for Alfarsi International. This app contains:
 
-#### Quick Order
+## Quick Order
 <details>
   <summary>Quick Order let's you quickly add regularly shopped items to cart from a popup.</summary>
   
