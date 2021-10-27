@@ -4,3 +4,6 @@
 *.swp
 tags
 alfarsi_erpnext/docs/current
+__pycache__
+node_modules/
+*.egg-info

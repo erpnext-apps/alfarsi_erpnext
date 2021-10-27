@@ -90,13 +90,11 @@ web_include_js = ["/assets/js/alfarsi-erpnext.min.js", "assets/js/dialog.min.js"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	"Customer": {
+		"validate": "alfarsi_erpnext.alfarsi_erpnext.customer.create_user_on_customer_creation"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
