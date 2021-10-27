@@ -31,6 +31,13 @@ Rows in this popup can be added or deleted.
 - Users are given feedback on the portal if a Sales order is generated against the current Quotation.
   <img width="1265" alt="Screenshot 2021-10-26 at 6 33 52 PM" src="https://user-images.githubusercontent.com/25857446/138888235-e790946e-999b-490f-822d-4d5731a97db8.png">
 
+## Auto Create User from Customer
+> Prerequisites: Email Account must be set up
+
+- A custom field **Create a New User** is added to Customer master, and is **enabled by default**.
+- It will create a new user against customer if **it does not already exist** and **if Create a New User is enabled**. It will also send a welcome email to this user so they can set up a password.
+
+
 #### License
 
 MIT
