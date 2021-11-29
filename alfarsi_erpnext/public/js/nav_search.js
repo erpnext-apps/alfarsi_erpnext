@@ -4,7 +4,7 @@ erpnext.NavSearch = class {
 	}
 
 	make() {
-		let navbar = $(".navbar-collapse").find(".ml-auto");
+		let navbar = $("#navbarTogglerDemo03").find(".ml-auto");
 		navbar.prepend(`
 			<li class="nav-item search-item mr-2">
 				<div class="input-group col-12 p-0 mr-4" style="width: 300px;">
