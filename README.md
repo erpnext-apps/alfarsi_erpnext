@@ -1,5 +1,5 @@
 ## Alfarsi ERPNext
-> Dependency: [ERPNext v13.13.0+](https://github.com/frappe/erpnext/releases/tag/v13.13.0)
+> Dependency: [From ERPNext v13.13.0+](https://github.com/frappe/erpnext/releases/tag/v13.13.0). `develop/v14` support is yet to be added.
 
 A custom app for Alfarsi International. This app contains:
 
