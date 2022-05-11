@@ -8,4 +8,4 @@ def execute():
 		"insert_after": "campaign_name",
 		"default": 1
 	}
-	create_custom_field("Customer", df)
+	create_custom_field("Lead", df)
