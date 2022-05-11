@@ -2,7 +2,7 @@ import frappe
 from frappe import _, msgprint
 
 def create_user_on_lead_creation(doc, method=None):
-    if not doc.get("create_user"):
+    if not doc.get("make_user"):
         return
 
     customer_email = doc.get("email_id")
