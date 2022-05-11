@@ -1,7 +1,7 @@
 import frappe
 from frappe import _, msgprint
 
-def create_user_on_customer_creation(doc, method=None):
+def create_user_on_lead_creation(doc, method=None):
     if not doc.get("create_user"):
         return
 
@@ -21,7 +21,7 @@ def create_user_on_customer_creation(doc, method=None):
         "doctype": "User",
         'send_welcome_email': 1,
         'email': customer_email,
-        'first_name': doc.get("customer_name"),
+        'first_name': doc.get("lead_name"),
         'user_type': 'Website User'
     })
 

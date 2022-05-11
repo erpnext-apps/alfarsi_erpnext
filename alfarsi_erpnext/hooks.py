@@ -91,8 +91,8 @@ web_include_js = ["/assets/js/alfarsi-erpnext.min.js", "assets/js/dialog.min.js"
 # Hook on document methods and events
 
 doc_events = {
-	"Customer": {
-		"validate": "alfarsi_erpnext.alfarsi_erpnext.customer.create_user_on_customer_creation"
+	"Lead": {
+		"validate": "alfarsi_erpnext.alfarsi_erpnext.customer.create_user_on_lead_creation"
 	}
 }
 
