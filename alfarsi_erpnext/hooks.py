@@ -32,7 +32,7 @@ web_include_js = ["/assets/js/alfarsi-erpnext.min.js", "assets/js/dialog.min.js"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Lead" : "public/js/lead.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -47,6 +47,15 @@ web_include_js = ["/assets/js/alfarsi-erpnext.min.js", "assets/js/dialog.min.js"
 # role_home_page = {
 #	"Role": "home_page"
 # }
+
+# website
+update_website_context = [
+	"alfarsi_erpnext.alfarsi_erpnext.api.update_website_context",
+]
+
+has_website_permission = {
+	"Quotation": "alfarsi_erpnext.alfarsi_erpnext.api.has_website_permission",
+}
 
 # Generators
 # ----------
@@ -92,7 +101,7 @@ web_include_js = ["/assets/js/alfarsi-erpnext.min.js", "assets/js/dialog.min.js"
 
 doc_events = {
 	"Lead": {
-		"validate": "alfarsi_erpnext.alfarsi_erpnext.customer.create_user_on_lead_creation"
+		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.create_user_on_lead_creation"
 	}
 }
 

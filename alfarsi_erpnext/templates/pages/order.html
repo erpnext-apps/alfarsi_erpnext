@@ -21,6 +21,11 @@
 			{% if doc.doctype == 'Purchase Order' %}
 				<a class="dropdown-item" href="/api/method/erpnext.buying.doctype.purchase_order.purchase_order.make_purchase_invoice_from_portal?purchase_order_name={{ doc.name }}" data-action="make_purchase_invoice">{{ _("Make Purchase Invoice") }}</a>
 			{% endif %}
+			{% if doc.doctype == 'Quotation' %}
+				{% if doc.docstatus == 0 %}
+					<button class="dropdown-item approve-quote" data-action="approve-quote" data-name="{{doc.name}}">{{ _("Approve Quote") }}</button>
+				{% endif %}
+			{% endif %}
 			<a class="dropdown-item" href='/printview?doctype={{ doc.doctype}}&name={{ doc.name }}&format={{ print_format }}'
 				target="_blank" rel="noopener noreferrer">
 				{{ _("Print") }}
@@ -77,6 +82,9 @@
 				<th width="20%" class="text-right">
 					{{ _("Amount") }}
 				</th>
+				<th width="20%" class="text-right">
+					{{ _("Action Update") }}
+				</th>
 			</thead>
 			<tbody>
 			{% for d in doc.items %}
@@ -93,6 +101,13 @@
 				<td class="text-right">
 					{{ d.get_formatted("amount")	 }}
 					<p class="text-muted small">{{ _("Rate:") }}&nbsp;{{ d.get_formatted("rate") }}</p>
+				</td>
+				<td class="text-right">
+					{% if d.rate_accepted %}
+						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item" disabled>{{ _("Already Accepted") }}</button>
+					{% else %}
+						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Accept") }}</button>
+					{% endif %}
 				</td>
 			</tr>
 			{% endfor %}
@@ -208,5 +223,38 @@
 			grand_total: '{{ doc.grand_total }}',
 			currency: '{{ doc.currency }}'
 		}
+	</script>
+	<script>
+		frappe.ready(() => {
+			$(".accept-quote-item").on("click", (e) => {
+				const $btn = $(e.currentTarget);
+				frappe.call({
+				method: 'alfarsi_erpnext.alfarsi_erpnext.customer.approve_quotation_items',
+				args: {
+					quotation_item: $btn.data('name')
+				},
+				callback: (value) => {
+					$btn.prop('disabled', true);
+				}
+				})
+			});
+		});
+	</script>
+	<script>
+		frappe.ready(() => {
+			$(".approve-quote").on("click", (e) => {
+				debugger;
+				const $btn = $(e.currentTarget);
+				frappe.call({
+				method: 'alfarsi_erpnext.alfarsi_erpnext.customer.approve_quote',
+				args: {
+					name: $btn.data('name')
+				},
+				callback: (value) => {
+					$btn.prop('disabled', true);
+				}
+				})
+			});
+		});
 	</script>
 {% endblock %}
