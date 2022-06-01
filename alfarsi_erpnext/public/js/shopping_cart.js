@@ -158,7 +158,7 @@ $.extend(shopping_cart, {
 			$btn.parent().find('.cart-indicator').removeClass('hidden');
 
 			const item_code = $btn.data('item-code');
-			alfarsi_erpnext.alfarsi_erpnext.update_cart({
+			alfarsi_erpnext.alfarsi_erpnext.cart.update_cart({
 				item_code,
 				qty: 1
 			});

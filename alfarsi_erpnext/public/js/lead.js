@@ -1,4 +1,4 @@
-frappe.ui.form.on("Event", "refresh", function(frm) {
+frappe.ui.form.on("Lead", "refresh", function(frm) {
   frm.add_custom_button(__("User"), function() {
     frappe.call({
       method: "alfarsi_erpnext.alfarsi_erpnext.customer.create_user_from_lead",

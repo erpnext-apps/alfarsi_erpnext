@@ -25,7 +25,7 @@ def set_cart_count(quotation=None):
 
 @frappe.whitelist()
 def get_cart_quotation(doc=None):
-	party = get_party('unapprovedlead@aerele.in')
+	party = get_party('unapprovedlead@alfarsi.me')
 
 	if not doc:
 		quotation = _get_cart_quotation(party)
@@ -132,7 +132,7 @@ def request_for_quotation():
 @frappe.whitelist(allow_guest=True)
 def update_cart(item_code, qty, additional_notes=None, with_items=False):
 	if frappe.session.user == 'Guest':
-		frappe.session.user = 'unapprovedlead@aerele.in'
+		frappe.session.user = 'unapprovedlead@alfarsi.me'
 	quotation = _get_cart_quotation()
 
 	empty_card = False
@@ -174,7 +174,7 @@ def update_cart(item_code, qty, additional_notes=None, with_items=False):
 
 	if cint(with_items):
 		context = get_cart_quotation(quotation)
-		if frappe.session.user == 'unapprovedlead@aerele.in':
+		if frappe.session.user == 'unapprovedlead@alfarsi.me':
 			frappe.session.user = 'Guest'
 		return {
 			"items": frappe.render_template("templates/includes/cart/cart_items.html", context),
@@ -184,7 +184,7 @@ def update_cart(item_code, qty, additional_notes=None, with_items=False):
 			),
 		}
 	else:
-		if frappe.session.user == 'unapprovedlead@aerele.in':
+		if frappe.session.user == 'unapprovedlead@alfarsi.me':
 			frappe.session.user = 'Guest'
 		frappe.cache().set_value('quote', quotation.name)
 		print(frappe.cache().get_value('quote'))
@@ -490,7 +490,7 @@ def set_taxes(quotation, cart_settings):
 
 def get_party(user=None):
 	if frappe.session.user == 'Guest':
-		user = 'unapprovedlead@aerele.in'
+		user = 'unapprovedlead@alfarsi.me'
 	if not user:
 		user = frappe.session.user
 
