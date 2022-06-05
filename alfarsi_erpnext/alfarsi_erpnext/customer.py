@@ -145,18 +145,6 @@ def approve_quotation_items(quotation_item):
     else:
         frappe.throw("Not allowed to accept at this point")
 
-def rearrange_quotation_items(doc, method=None):
-    # if hasattr(doc, 'from_ecommerce'):
-    #     if not doc.from_ecommerce:
-    #         return
-    
-    # unapproved_items = []
-    # for item in doc.items:
-    #     if not item.rate_accepted:
-    #         unapproved_items.append(item.name)
-    # #bench set-admin-password 'password_here'
-    pass
-
 
 
 

@@ -120,10 +120,7 @@ quotation.get_list_context = get_quotation_list_context
 doc_events = {
 	"Lead": {
 		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead"
-	},
-	# "Quotation": {
-	# 	"on_submit": "alfarsi_erpnext.alfarsi_erpnext.customer.rearrange_quotation_items"
-	# }
+	}
 }
 
 # Scheduled Tasks
