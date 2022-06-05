@@ -27,19 +27,22 @@ $.extend(shopping_cart, {
 		// 	// });
 		// 	pass
 		// } else {
-		var d = new Date();
-		// expires within 30 minutes
-		d.setTime(d.getDate() + 7);
-		var expires = "expires="+d.toUTCString();
-		// UUID is not included in JS. So generating a random number.
-		var random_number = Math.floor((Math.random() * 100) * Math.floor((Math.random() * 100) * Date.now()))
-		if (frappe.get_cookie("guest_cart") === undefined) {
+		
+		if (frappe.get_cookie("guest_cart") === undefined 
+		|| frappe.get_cookie("guest_cart") === null 
+		|| frappe.get_cookie("guest_cart") === "undefined") {
+			var d = new Date();
+			d.setTime(d.getDate() + 7);
+			var expires = "expires="+d.toUTCString();
+			// UUID is not included in JS. So generating a random number.
+			var random_number = Math.floor((Math.random() * 100) * Math.floor((Math.random() * 100) * Date.now()))
 			document.cookie = "guest_cart=" + random_number + ";" + expires + ";path=/";
 		}
 		shopping_cart.freeze();
 		return frappe.call({
 			type: "POST",
 			method: "alfarsi_erpnext.alfarsi_erpnext.cart.update_cart",
+			freeze: 1,
 			args: {
 				item_code: opts.item_code,
 				qty: opts.qty,
