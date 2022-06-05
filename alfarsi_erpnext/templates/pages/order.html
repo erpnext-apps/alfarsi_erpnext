@@ -82,9 +82,11 @@
 				<th width="20%" class="text-right">
 					{{ _("Amount") }}
 				</th>
+				{% doc.doctype == 'Quotation' %}
 				<th width="20%" class="text-right">
 					{{ _("Action Update") }}
 				</th>
+				{% endif %}
 			</thead>
 			<tbody>
 			{% for d in doc.items %}
@@ -102,6 +104,7 @@
 					{{ d.get_formatted("amount")	 }}
 					<p class="text-muted small">{{ _("Rate:") }}&nbsp;{{ d.get_formatted("rate") }}</p>
 				</td>
+				{% doc.doctype == 'Quotation' %}
 				<td class="text-right">
 					{% if d.rate_accepted %}
 						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item" disabled>{{ _("Accepted") }}</button>
@@ -109,6 +112,7 @@
 						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Accept") }}</button>
 					{% endif %}
 				</td>
+				{% endif %}
 			</tr>
 			{% endfor %}
 			</tbody>
