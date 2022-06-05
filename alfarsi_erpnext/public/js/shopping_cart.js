@@ -27,16 +27,15 @@ $.extend(shopping_cart, {
 		// 	// });
 		// 	pass
 		// } else {
-		
-		if (frappe.get_cookie("guest_cart") === undefined 
-		|| frappe.get_cookie("guest_cart") === null 
-		|| frappe.get_cookie("guest_cart") === "undefined") {
+		var guest_cart_cookie = frappe.get_cookie("guest_cart")
+		if (!guest_cart_cookie) {
 			var d = new Date();
 			d.setTime(d.getDate() + 7);
 			var expires = "expires="+d.toUTCString();
 			// UUID is not included in JS. So generating a random number.
 			var random_number = Math.floor((Math.random() * 100) * Math.floor((Math.random() * 100) * Date.now()))
 			document.cookie = "guest_cart=" + random_number + ";" + expires + ";path=/";
+			guest_cart_cookie = random_number
 		}
 		shopping_cart.freeze();
 		return frappe.call({
@@ -48,7 +47,7 @@ $.extend(shopping_cart, {
 				qty: opts.qty,
 				additional_notes: opts.additional_notes !== undefined ? opts.additional_notes : undefined,
 				with_items: opts.with_items || 0,
-				quote_identifier: frappe.get_cookie("guest_cart")
+				quote_identifier: guest_cart_cookie
 			},
 			btn: opts.btn,
 			callback: function(r) {
