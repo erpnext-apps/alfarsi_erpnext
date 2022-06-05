@@ -2,6 +2,7 @@ import json
 
 import frappe
 from frappe.utils import cint, cstr
+from frappe import _
 
 from erpnext.e_commerce.shopping_cart.cart import _get_cart_quotation, _set_price_list
 from erpnext.e_commerce.doctype.e_commerce_settings.e_commerce_settings import (
@@ -89,6 +90,25 @@ def get_price(item_code=None):
 def update_website_context(context):
 	context["get_list"] = get_transaction_list
 
+def get_quotation_list_context(context=None):
+	from erpnext.controllers.website_list_for_contact import get_list_context
+
+	list_context = get_list_context(context)
+	list_context.update(
+		{
+			"show_sidebar": True,
+			"show_search": True,
+			"no_breadcrumbs": True,
+			"title": _("Quotations"),
+		}
+	)
+	list_context.update(
+		{
+			"get_list": get_transaction_list
+		}
+	)
+
+	return list_context
 
 def get_transaction_list(
 	doctype,
@@ -109,7 +129,7 @@ def get_transaction_list(
 		filters.append((doctype, "docstatus", "<", 2))
 	elif doctype in ["Quotation"]:
 		filters.append((doctype, "docstatus", "=", 0))
-		filters.append(("workflow_state", "=", "Ready for Customer Review"))
+		filters.append(("workflow_state", "in", ["Ready for Customer Review", "Approved"]))
 	else:
 		filters.append((doctype, "docstatus", "=", 1))
 
@@ -122,7 +142,7 @@ def get_transaction_list(
 
 		if customers:
 			if doctype == "Quotation":
-				filters.append(("quotation_to", "=", "Customer"))
+				filters.append(("quotation_to", "in", ["Customer", "Lead"]))
 				filters.append(("party_name", "in", customers))
 			else:
 				filters.append(("customer", "in", customers))
@@ -143,7 +163,6 @@ def get_transaction_list(
 		if not customers and not suppliers and custom:
 			ignore_permissions = False
 			filters = []
-
 	transactions = get_list_for_transactions(
 		doctype,
 		txt,
@@ -196,7 +215,7 @@ def get_customers_suppliers(doctype, user):
 	return customers if has_customer_field else None, suppliers if has_supplier_field else None, leads if has_customer_field else None
 
 
-def has_website_permission(doc, ptype, user, verbose=False):
+def alfarsi_has_website_permission(doc, ptype, user, verbose=False):
 	doctype = doc.doctype
 	customers, suppliers, leads = get_customers_suppliers(doctype, user)
 	if customers:
@@ -205,7 +224,6 @@ def has_website_permission(doc, ptype, user, verbose=False):
 		fieldname = "suppliers" if doctype == "Request for Quotation" else "supplier"
 		return frappe.db.exists(doctype, {"name": doc.name, fieldname: ["in", suppliers]})
 	elif leads:
-		# import pdb; pdb.set_trace()
 		return frappe.db.exists(doctype, get_lead_filter(doc, leads))
 	else:
 		return False

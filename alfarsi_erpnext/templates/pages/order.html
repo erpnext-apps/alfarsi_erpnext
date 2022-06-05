@@ -59,10 +59,10 @@
 		{%- set party_name = doc.supplier_name if doc.doctype in ['Supplier Quotation', 'Purchase Invoice', 'Purchase Order'] else doc.customer_name %}
 		<b>{{ party_name }}</b>
 
-		{% if doc.contact_display and doc.contact_display != party_name %}
+		<!-- {% if doc.contact_display and doc.contact_display != party_name %}
 			<br>
 			{{ doc.contact_display }}
-		{% endif %}
+		{% endif %} -->
 	</p>
 
 	{% if doc._header %}
@@ -104,7 +104,7 @@
 				</td>
 				<td class="text-right">
 					{% if d.rate_accepted %}
-						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item" disabled>{{ _("Already Accepted") }}</button>
+						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item" disabled>{{ _("Accepted") }}</button>
 					{% else %}
 						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Accept") }}</button>
 					{% endif %}
@@ -235,6 +235,7 @@
 				},
 				callback: (value) => {
 					$btn.prop('disabled', true);
+					$btn.html('Accepted')
 				}
 				})
 			});
@@ -243,7 +244,6 @@
 	<script>
 		frappe.ready(() => {
 			$(".approve-quote").on("click", (e) => {
-				debugger;
 				const $btn = $(e.currentTarget);
 				frappe.call({
 				method: 'alfarsi_erpnext.alfarsi_erpnext.customer.approve_quote',
@@ -251,7 +251,12 @@
 					name: $btn.data('name')
 				},
 				callback: (value) => {
-					$btn.prop('disabled', true);
+					if (value.message) {
+						$btn.prop('disabled', true);
+						frappe.msgprint('Order approved successfully.')
+					} else {
+						frappe.msgprint('Auto approval failed. Please contact the sales person')
+					}
 				}
 				})
 			});

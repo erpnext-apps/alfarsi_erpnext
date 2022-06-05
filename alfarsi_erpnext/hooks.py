@@ -48,20 +48,38 @@ doctype_js = {"Lead" : "public/js/lead.js"}
 #	"Role": "home_page"
 # }
 
-# website
-update_website_context = [
-	"alfarsi_erpnext.alfarsi_erpnext.api.update_website_context",
-]
+# # website
+# update_website_context = [
+# 	"alfarsi_erpnext.alfarsi_erpnext.api.update_website_context",
+# ]
 
 has_website_permission = {
 	"Quotation": "alfarsi_erpnext.alfarsi_erpnext.api.has_website_permission",
+}
+
+extend_website_page_controller_context = {
+	"erpnext.templates.pages.cart": "alfarsi_erpnext.templates.pages.cart"
+}
+
+override_doctype_class = {
+	'Quotation': 'alfarsi_erpnext.alfarsi_erpnext.quotation.CustomQuotation'
 }
 
 # Generators
 # ----------
 
 # automatically create page for each record of this doctype
-# website_generators = ["Web Page"]
+# website_generators = ["Quotation"]
+
+from alfarsi_erpnext.alfarsi_erpnext.api import get_quotation_list_context, alfarsi_has_website_permission
+from erpnext.selling.doctype.quotation import quotation
+quotation.get_list_context = get_quotation_list_context
+# quotation.Quotation.has_website_permission = alfarsi_has_website_permission
+
+
+# from erpnext.controllers import website_list_for_contact
+# from alfarsi_erpnext.alfarsi_erpnext.api import has_website_permission
+# website_list_for_contact.has_website_permission = has_website_permission
 
 # Installation
 # ------------
@@ -101,8 +119,11 @@ has_website_permission = {
 
 doc_events = {
 	"Lead": {
-		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.create_user_on_lead_creation"
-	}
+		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead"
+	},
+	# "Quotation": {
+	# 	"on_submit": "alfarsi_erpnext.alfarsi_erpnext.customer.rearrange_quotation_items"
+	# }
 }
 
 # Scheduled Tasks

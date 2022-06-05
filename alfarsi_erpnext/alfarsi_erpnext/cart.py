@@ -11,6 +11,8 @@ from erpnext.e_commerce.doctype.e_commerce_settings.e_commerce_settings import (
 	get_shopping_cart_settings,
 )
 from erpnext.utilities.product import get_web_item_qty_in_stock
+from frappe.utils import cint, date_diff, datetime, get_datetime, today
+
 
 
 def set_cart_count(quotation=None):
@@ -26,9 +28,10 @@ def set_cart_count(quotation=None):
 @frappe.whitelist()
 def get_cart_quotation(doc=None):
 	party = get_party('unapprovedlead@alfarsi.me')
+	quote_identifier = frappe.request.cookies.get('guest_cart')
 
 	if not doc:
-		quotation = _get_cart_quotation(party)
+		quotation = _get_cart_quotation(party, quote_identifier)
 		doc = quotation
 		set_cart_count(quotation)
 
@@ -130,10 +133,13 @@ def request_for_quotation():
 
 
 @frappe.whitelist(allow_guest=True)
-def update_cart(item_code, qty, additional_notes=None, with_items=False):
+def update_cart(item_code, qty, additional_notes=None, with_items=False, quote_identifier=None):
 	if frappe.session.user == 'Guest':
 		frappe.session.user = 'unapprovedlead@alfarsi.me'
-	quotation = _get_cart_quotation()
+	if quote_identifier:
+		if hasattr(frappe.local, "cookie_manager"):
+			frappe.local.cookie_manager.set_cookie("guest_cart", quote_identifier)
+	quotation = _get_cart_quotation(quote_identifier = quote_identifier)
 
 	empty_card = False
 	qty = flt(qty)
@@ -322,10 +328,10 @@ def decorate_quotation_doc(doc):
 	return doc
 
 
-def _get_cart_quotation(party=None):
+def _get_cart_quotation(party=None, quote_identifier=None):
 	"""Return the open Quotation of type "Shopping Cart" or make a new one"""
 	if not party:
-		party = get_party()
+		party = get_party('unapprovedlead@alfarsi.me')
 
 	quotation = frappe.get_all(
 		"Quotation",
@@ -335,12 +341,13 @@ def _get_cart_quotation(party=None):
 			# "contact_email": frappe.session.user,
 			"order_type": "Shopping Cart",
 			"docstatus": 0,
-			"is_lead_registered": 0
+			"is_lead_registered": 0,
+			"from_ecommerce": 1,
+			"session_uuid": quote_identifier
 		},
 		order_by="modified desc",
 		limit_page_length=1,
 	)
-
 	if quotation:
 		qdoc = frappe.get_doc("Quotation", quotation[0].name)
 	else:
@@ -356,6 +363,8 @@ def _get_cart_quotation(party=None):
 				"docstatus": 0,
 				"__islocal": 1,
 				"party_name": party.name,
+				"from_ecommerce": 1,
+				"session_uuid": quote_identifier
 			}
 		)
 
@@ -366,12 +375,13 @@ def _get_cart_quotation(party=None):
 		qdoc.run_method("set_missing_values")
 		apply_cart_settings(party, qdoc)
 
-	for item in qdoc.items:
-		item.rate = 0
-		item.amount = 0
-	qdoc.net_total = 0
-	qdoc.total = 0
-	qdoc.grand_total = 0
+	if frappe.session.user == "Guest":
+		for item in qdoc.items:
+			item.rate = 0
+			item.amount = 0
+		qdoc.net_total = 0
+		qdoc.total = 0
+		qdoc.grand_total = 0
 
 	return qdoc
 
@@ -509,7 +519,6 @@ def get_party(user=None):
 
 	if cart_settings.enable_checkout:
 		debtors_account = get_debtors_account(cart_settings)
-
 	if party:
 		return frappe.get_doc(party_doctype, party)
 
