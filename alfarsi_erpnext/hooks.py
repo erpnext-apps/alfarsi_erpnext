@@ -71,10 +71,9 @@ override_doctype_class = {
 # automatically create page for each record of this doctype
 # website_generators = ["Quotation"]
 
-from alfarsi_erpnext.alfarsi_erpnext.api import get_quotation_list_context, alfarsi_has_website_permission
-from erpnext.selling.doctype.quotation import quotation
-quotation.get_list_context = get_quotation_list_context
-# quotation.Quotation.has_website_permission = alfarsi_has_website_permission
+from alfarsi_erpnext.alfarsi_erpnext.api import get_quotation_list_context as _get_quotation_list_context
+from erpnext.selling.doctype.quotation import quotation as _quotation
+_quotation.get_list_context = _get_quotation_list_context
 
 
 # from erpnext.controllers import website_list_for_contact
