@@ -128,7 +128,7 @@ def get_transaction_list(
 	if doctype in ["Supplier Quotation", "Purchase Invoice"]:
 		filters.append((doctype, "docstatus", "<", 2))
 	elif doctype in ["Quotation"]:
-		filters.append((doctype, "docstatus", "=", 0))
+		filters.append((doctype, "docstatus", "<", 2))
 		filters.append(("workflow_state", "in", ["Ready for Customer Review", "Approved"]))
 	else:
 		filters.append((doctype, "docstatus", "=", 1))
@@ -142,6 +142,12 @@ def get_transaction_list(
 
 		if customers:
 			if doctype == "Quotation":
+				linked_party = None
+				customers_copy = customers.copy()
+				for customer in customers_copy:
+					linked_party = frappe.db.get_value("Customer", customer, "lead_name")
+					if linked_party:
+						customers.append(linked_party)
 				filters.append(("quotation_to", "in", ["Customer", "Lead"]))
 				filters.append(("party_name", "in", customers))
 			else:
@@ -233,9 +239,14 @@ def get_customer_filter(doc, customers):
 	doctype = doc.doctype
 	filters = frappe._dict()
 	filters.name = doc.name
+	customers_copy = customers.copy()
+	for customer in customers_copy:
+		linked_party = frappe.db.get_value("Customer", customer, "lead_name")
+		if linked_party:
+			customers.append(linked_party)
 	filters[get_customer_field_name(doctype)] = ["in", customers]
 	if doctype == "Quotation":
-		filters.quotation_to = "Customer"
+		filters.quotation_to = ["in", ["Customer", "Lead"]]
 	return filters
 
 def get_lead_filter(doc, leads):

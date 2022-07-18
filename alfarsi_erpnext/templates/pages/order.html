@@ -23,7 +23,8 @@
 			{% endif %}
 			{% if doc.doctype == 'Quotation' %}
 				{% if doc.docstatus == 0 %}
-					<button class="dropdown-item approve-quote" data-action="approve-quote" data-name="{{doc.name}}">{{ _("Approve Quote") }}</button>
+					<button class="dropdown-item approve-quote" data-action="approve-quote" data-name="{{doc.name}}">{{ _("Approve Accepted Quote") }}</button>
+					<button class="dropdown-item approve-full-quote" data-action="approve-full-quote" data-name="{{doc.name}}">{{ _("Approve Full Quote") }}</button>
 				{% endif %}
 			{% endif %}
 			<a class="dropdown-item" href='/printview?doctype={{ doc.doctype}}&name={{ doc.name }}&format={{ print_format }}'
@@ -107,7 +108,7 @@
 				{% if doc.doctype == 'Quotation' %}
 				<td class="text-right">
 					{% if d.rate_accepted %}
-						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item" disabled>{{ _("Accepted") }}</button>
+						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Reject") }}</button>
 					{% else %}
 						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Accept") }}</button>
 					{% endif %}
@@ -238,8 +239,11 @@
 					quotation_item: $btn.data('name')
 				},
 				callback: (value) => {
-					$btn.prop('disabled', true);
-					$btn.html('Accepted')
+					if (value.message == 1) {
+						$btn.html('Reject')
+					} else {
+						$btn.html('Accept')
+					}
 				}
 				})
 			});
@@ -253,6 +257,26 @@
 				method: 'alfarsi_erpnext.alfarsi_erpnext.customer.approve_quote',
 				args: {
 					name: $btn.data('name')
+				},
+				callback: (value) => {
+					if (value.message) {
+						$btn.prop('disabled', true);
+						frappe.msgprint('Order approved successfully.')
+					} else {
+						frappe.msgprint('Auto approval failed. Please contact the sales person')
+					}
+				}
+				})
+			});
+		});
+		frappe.ready(() => {
+			$(".approve-full-quote").on("click", (e) => {
+				const $btn = $(e.currentTarget);
+				frappe.call({
+				method: 'alfarsi_erpnext.alfarsi_erpnext.customer.approve_quote',
+				args: {
+					name: $btn.data('name'),
+					approve_all: 1
 				},
 				callback: (value) => {
 					if (value.message) {
