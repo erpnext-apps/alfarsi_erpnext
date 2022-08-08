@@ -14,9 +14,8 @@ frappe.ui.form.on("Quotation", "refresh", function(frm) {
         freeze: 1,
         callback: function(r){
           for (let i = 0; i < frm.doc.items.length; i++) {
-            debugger;
             frm.doc.items[i].standard_price = r.message[frm.doc.items[i].item_code] ? r.message[frm.doc.items[i].item_code] : 0
-            frm.doc.items[i].rate = 0
+            frm.doc.items[i].rate = r.message[frm.doc.items[i].item_code + "-negotiated"] ? r.message[frm.doc.items[i].item_code + "-negotiated"] : 0
           }
           frm.refresh_fields();
           frm.dirty();
