@@ -218,8 +218,8 @@ def fetch_standard_price(items, price_list, party, quotation_to):
         customer = frappe.db.get_value("Customer", {"lead_name": party})
     result = {}
     for item in items:
-        result[item['item_code']] = frappe.db.get_value("Item Price",{"price_list": price_list, "item_code": item['item_code'], "customer": customer, "selling": 1}, "price_list_rate")
-        result[item['item_code'] + "-negotiated"] = frappe.db.get_value("Item Price",{"price_list": price_list, "item_code": item['item_code'], "selling": 1}, "price_list_rate")
+        result[item['item_code']] = frappe.db.get_value("Item Price",{"price_list": price_list, "item_code": item['item_code'], "selling": 1}, "price_list_rate")
+        result[item['item_code'] + "-negotiated"] = frappe.db.get_value("Item Price",{"price_list": price_list, "item_code": item['item_code'], "customer": customer, "selling": 1}, "price_list_rate")
     return result
 
 
