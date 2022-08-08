@@ -43,37 +43,84 @@ def transfer_quote_to_lead(doc, method=None):
 
     quote_doc.save()
     frappe.local.cookie_manager.set_cookie("cart_count", 0)
-    # if not doc.get("make_user"):
-    #     return
 
-    # customer_email = doc.get("email_id")
-    # if not customer_email:
-    #     msgprint(
-    #         _("Skipped User creation due to missing Email."),
-    #         title="Note"
-    #     )
-    #     return
+def transfer_quote_to_lead_on_login(login_manager, method=None):
+    party = get_party('unapprovedlead@alfarsi.me')
+    quote_identifier = frappe.request.cookies.get('guest_cart')
+    if not quote_identifier:
+        return
+    
+    open_quote = frappe.db.get_value("Quotation", {"session_uuid": quote_identifier, "is_lead_registered": 0}, "name")
+    if not open_quote:
+        return
 
-    # user_exists = frappe.db.exists("User", {"email": customer_email})
-    # if user_exists:
-    #     return
+    customer = frappe.get_all(
+        "Customer", filters={"email_id": frappe.session.user}
+    )
+    customer = [customer.name for customer in customer]
+    matching_customer = None
+    if len(customer) > 0:
+        matching_customer = frappe.get_doc("Customer", customer[0])
+        quotation_to = "Customer"
+    
+    if not matching_customer:
+        leads = frappe.get_all(
+            "Lead", filters={"email_id": frappe.session.user}
+        )
+        leads = [lead.name for lead in leads]
+        if len(leads) > 0:
+            matching_customer = frappe.get_doc("Lead", customer[0])
+            quotation_to = "Lead"
 
-    # user = frappe.get_doc({
-    #     "doctype": "User",
-    #     'send_welcome_email': 1,
-    #     'email': customer_email,
-    #     'first_name': doc.get("lead_name"),
-    #     'user_type': 'Website User'
-    # })
+    if not matching_customer:
+        return
 
-    # try:
-    #     # user.add_roles("Customer")
-    #     user.save(ignore_permissions=True)
-    # except frappe.exceptions.OutgoingEmailError:
-    #     msgprint(
-    #         _("Failed to send welcome email."),
-    #         alert=True
-    #     )
+    quotation = _get_cart_quotation(party, quote_identifier)
+    if not quotation:
+        return
+    quote_doc = frappe.get_doc('Quotation', quotation.name)
+    quote_doc.quotation_to = quotation_to
+    quote_doc.party_name = matching_customer.name
+    quote_doc.customer_name = matching_customer.name
+    quote_doc.is_lead_registered = 1
+
+    address_names = frappe.db.get_all(
+        "Dynamic Link",
+        fields=("parent"),
+        filters=dict(parenttype="Address", link_doctype="Customer", link_name=matching_customer.name),
+    )
+
+    if address_names:
+        address_name = address_names[0].name
+        address_doc = frappe.get_doc("Address", address_names[0].name).as_dict()
+        address_display = get_address_display(address_doc)
+
+        quote_doc.customer_address = address_name
+        quote_doc.address_display = address_display
+        quote_doc.shipping_address_name = address_name
+    
+    contact_names = frappe.db.get_all(
+        "Dynamic Link",
+        fields=("parent"),
+        filters=dict(parenttype="Contact", link_doctype="Customer", link_name=matching_customer.name),
+    )
+
+    if contact_names:
+        contact_name = contact_names[0].name
+        quote_doc.contact_person = contact_name
+        quote_doc.contact_display = None
+
+    quote_doc.save()
+    frappe.local.cookie_manager.set_cookie("cart_count", 0)
+
+def validate_email(doc, method=None):
+    duplicate_leads = frappe.get_all(
+        "Lead", filters={"email_id": doc.email_id, "name": ["!=", doc.name]}
+    )
+    duplicate_leads = [lead.name for lead in duplicate_leads]
+    if duplicate_leads:
+        frappe.throw("An account with this email id already exists. Please login")
+
 
 @frappe.whitelist()
 def create_user_from_lead(email, lead_name, docname=None):
@@ -152,6 +199,29 @@ def approve_quotation_items(quotation_item):
     else:
         frappe.throw("Not allowed to modify at this point")
     return frappe.db.get_value('Quotation Item', quotation_item, 'rate_accepted')
+
+@frappe.whitelist()
+def request_logged_user_quote(name):
+    if not name:
+        return False
+    frappe.db.set_value("Quotation", name, "is_lead_registered", 1)
+    return True
+
+@frappe.whitelist()
+def fetch_standard_price(items, price_list, party, quotation_to):
+    import json
+    items = json.loads(items)
+    customer = None
+    if quotation_to == 'Customer':
+        customer = frappe.db.get_value("Customer", party)
+    if quotation_to == 'Lead':
+        customer = frappe.db.get_value("Customer", {"lead_name": party})
+    result = {}
+    for item in items:
+        result[item['item_code']] = frappe.db.get_value("Item Price",{"price_list": price_list, "item_code": item['item_code'], "customer": customer, "selling": 1}, "price_list_rate")
+    return result
+
+
 
 
 

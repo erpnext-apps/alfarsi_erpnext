@@ -58,30 +58,42 @@
 			</button>
 		{% else %}
 			<!--btn-request-for-quotation-->
-			<a href="/register?new=1" style="color: white;">
-			<button class="btn btn-primary font-md w-100" type="button">
-				{{ _('Request for Quote') }} </a>
-			</button>
-		</a>
+			{% if frappe.session.user == "Guest" %}
+				<a href="/register?new=1" style="color: white;">
+					<button class="btn btn-primary font-md w-100" type="button">
+						{{ _('Request for Quote') }} </a>
+					</button>
+				</a>
+			{% else %}
+				
+					<button class="btn btn-primary font-md w-100 btn-request-quote" type="button" data-action="request_logged_user_quote" data-name="{{doc.name}}">
+						{{ _('Request for Quote') }} </a>
+					</button>
+				
+			{% endif %}
 		{% endif %}
 	</div>
 </div>
 
 <!-- TODO: Apply Coupon Dialog-->
-<!-- <script>
+<script>
 	frappe.ready(() => {
-		$('.btn-coupon-code').click((e) => {
+		$('.btn-request-quote').click((e) => {
 			const $btn = $(e.currentTarget);
-			const d = new frappe.ui.Dialog({
-				title: __('Coupons'),
-				fields: [
-					{
-						fieldname: 'coupons_area',
-						fieldtype: 'HTML'
-					}
-				]
+			frappe.call({
+				method: 'alfarsi_erpnext.alfarsi_erpnext.customer.request_logged_user_quote',
+				args: {
+					name: $btn.data('name')
+				},
+				freeze: true,
+				callback: (value) => {
+					if(value.message)
+						frappe.msgprint('Your request for quote is under review.')
+					else
+						frappe.msgprint('Something went wrong. Please try again.')
+				}
+				})
 			});
-			d.show();
+			
 		});
-	});
-</script> -->
+</script>

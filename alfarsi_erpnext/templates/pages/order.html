@@ -23,8 +23,8 @@
 			{% endif %}
 			{% if doc.doctype == 'Quotation' %}
 				{% if doc.docstatus == 0 %}
-					<button class="dropdown-item approve-quote" data-action="approve-quote" data-name="{{doc.name}}">{{ _("Approve Accepted Quote") }}</button>
-					<button class="dropdown-item approve-full-quote" data-action="approve-full-quote" data-name="{{doc.name}}">{{ _("Approve Full Quote") }}</button>
+					<button class="dropdown-item approve-quote" data-action="approve-quote" data-name="{{doc.name}}">{{ _("Approve Included Item(s)") }}</button>
+					<button class="dropdown-item approve-full-quote" data-action="approve-full-quote" data-name="{{doc.name}}">{{ _("Approve All Items") }}</button>
 				{% endif %}
 			{% endif %}
 			<a class="dropdown-item" href='/printview?doctype={{ doc.doctype}}&name={{ doc.name }}&format={{ print_format }}'
@@ -84,8 +84,8 @@
 					{{ _("Amount") }}
 				</th>
 				{% if doc.doctype == 'Quotation' %}
-				<th width="20%" class="text-right">
-					{{ _("Action Update") }}
+				<th width="40%" class="text-right">
+					{{ _("Action") }}
 				</th>
 				{% endif %}
 			</thead>
@@ -108,12 +108,13 @@
 				{% if doc.doctype == 'Quotation' %}
 				<td class="text-right">
 					{% if d.rate_accepted %}
-						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Reject") }}</button>
+						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Exclude item") }}</button>
 					{% else %}
-						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Accept") }}</button>
+						<button data-action="approve_quotation_items" data-name="{{d.name}}" docname="{{doc.name}}" class="btn btn-primary btn-sm accept-quote-item">{{ _("Include") }}</button>
 					{% endif %}
 				</td>
 				{% endif %}
+				
 			</tr>
 			{% endfor %}
 			</tbody>
@@ -240,9 +241,9 @@
 				},
 				callback: (value) => {
 					if (value.message == 1) {
-						$btn.html('Reject')
+						$btn.html('Exclude Item')
 					} else {
-						$btn.html('Accept')
+						$btn.html('Include')
 					}
 				}
 				})

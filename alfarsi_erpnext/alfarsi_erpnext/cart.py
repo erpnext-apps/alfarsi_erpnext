@@ -27,7 +27,10 @@ def set_cart_count(quotation=None):
 
 @frappe.whitelist()
 def get_cart_quotation(doc=None):
-	party = get_party('unapprovedlead@alfarsi.me')
+	if frappe.session.user == "Guest":
+		party = get_party('unapprovedlead@alfarsi.me')
+	else:
+		party = get_party()
 	quote_identifier = frappe.request.cookies.get('guest_cart')
 
 	if not doc:
@@ -330,8 +333,10 @@ def decorate_quotation_doc(doc):
 
 def _get_cart_quotation(party=None, quote_identifier=None):
 	"""Return the open Quotation of type "Shopping Cart" or make a new one"""
-	if not party:
+	if not party and frappe.session.user == 'Guest':
 		party = get_party('unapprovedlead@alfarsi.me')
+	else:
+		party = get_party()
 
 	quotation = frappe.get_all(
 		"Quotation",
@@ -375,6 +380,7 @@ def _get_cart_quotation(party=None, quote_identifier=None):
 		qdoc.run_method("set_missing_values")
 		apply_cart_settings(party, qdoc)
 
+	# import pdb; pdb.set_trace()
 	if frappe.session.user == "Guest":
 		for item in qdoc.items:
 			item.rate = 0
@@ -382,6 +388,23 @@ def _get_cart_quotation(party=None, quote_identifier=None):
 		qdoc.net_total = 0
 		qdoc.total = 0
 		qdoc.grand_total = 0
+	elif qdoc.quotation_to == "Customer":
+		qdoc.net_total = 0
+		qdoc.total = 0
+		qdoc.grand_total = 0
+		for item in qdoc.items:
+
+			rate = frappe.db.get_value("Item Price",{"price_list": qdoc.selling_price_list, "item_code": item.item_code, "customer": qdoc.party_name, "selling": 1}, "price_list_rate")
+			if not rate:
+				item.rate = 0
+				item.amount = 0
+			else:
+				item.rate = rate
+				item.amount = item.rate * item.qty
+				qdoc.net_total += qdoc.net_total
+				qdoc.total += qdoc.total
+				qdoc.grand_total += qdoc.grand_total
+
 
 	return qdoc
 
@@ -510,8 +533,16 @@ def get_party(user=None):
 	if contact_name:
 		contact = frappe.get_doc("Contact", contact_name)
 		if contact.links:
-			party_doctype = contact.links[0].link_doctype
-			party = contact.links[0].link_name
+			customer_found = False
+			for link in contact.links:
+				if link.link_doctype == "Customer":
+					party_doctype = link.link_doctype
+					party = link.link_name
+					customer_found = True
+			if not customer_found:
+				party_doctype = contact.links[0].link_doctype
+				party = contact.links[0].link_name
+
 
 	cart_settings = frappe.get_doc("E Commerce Settings")
 

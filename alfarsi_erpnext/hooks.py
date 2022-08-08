@@ -32,7 +32,8 @@ web_include_js = ["/assets/js/alfarsi-erpnext.min.js", "assets/js/dialog.min.js"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Lead" : "public/js/lead.js"}
+doctype_js = {"Lead" : "public/js/lead.js",
+							"Quotation": "public/js/quotation.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -118,9 +119,11 @@ _quotation.get_list_context = _get_quotation_list_context
 
 doc_events = {
 	"Lead": {
-		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead"
+		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead",
+		"autoname": "alfarsi_erpnext.alfarsi_erpnext.customer.validate_email"
 	}
 }
+on_login = "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead_on_login"
 
 # Scheduled Tasks
 # ---------------
