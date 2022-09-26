@@ -9,6 +9,8 @@ def transfer_quote_to_lead(doc, method=None):
     quote_identifier = frappe.request.cookies.get('guest_cart')
 
     quotation = _get_cart_quotation(party, quote_identifier)
+    if not quotation.name:
+        return
     quote_doc = frappe.get_doc('Quotation', quotation.name)
     quote_doc.quotation_to = "Lead"
     quote_doc.party_name = doc.name
