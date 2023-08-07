@@ -12,6 +12,7 @@ frappe.ui.form.on("Purchase Receipt", {
 						frm.set_value("items",[])
 						for(const element of r.message.items){
 							let row = frm.add_child("items", element);
+							frm.script_manager.trigger('item_code', row.doctype, row.name)
 							frm.refresh_field("items");
 						}
 					}
