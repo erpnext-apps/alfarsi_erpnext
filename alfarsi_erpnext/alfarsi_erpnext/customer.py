@@ -11,6 +11,17 @@ def transfer_quote_to_lead(doc, method=None):
     quotation = _get_cart_quotation(party, quote_identifier)
     if not quotation.name:
         return
+    
+    contact = frappe.new_doc("Contact")
+    contact.first_name = doc.lead_name
+    contact.add_email(doc.email_id, is_primary=True)
+    contact.add_phone(doc.mobile_no, is_primary_phone=True)
+
+    contact.append("links", {"link_doctype": "Lead", "link_name": doc.name})
+
+    contact.flags.ignore_mandatory = True
+    contact.save(ignore_permissions=True)
+
     quote_doc = frappe.get_doc('Quotation', quotation.name)
     quote_doc.quotation_to = "Lead"
     quote_doc.party_name = doc.name

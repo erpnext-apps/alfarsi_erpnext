@@ -88,7 +88,7 @@ def get_price(item_code=None):
 	return price or "NA"
 
 def update_website_context(context):
-	context["get_list"] = get_transaction_list
+	context["get_list"] = get_quotation_transaction_list
 
 def get_quotation_list_context(context=None):
 	from erpnext.controllers.website_list_for_contact import get_list_context
@@ -104,13 +104,13 @@ def get_quotation_list_context(context=None):
 	)
 	list_context.update(
 		{
-			"get_list": get_transaction_list
+			"get_list": get_quotation_transaction_list
 		}
 	)
-
+	
 	return list_context
 
-def get_transaction_list(
+def get_quotation_transaction_list(
 	doctype,
 	txt=None,
 	filters=None,
@@ -123,15 +123,18 @@ def get_transaction_list(
 	ignore_permissions = False
 
 	if not filters:
-		filters = []
+		filters = {}
+
+	if user == "Guest" and doctype == "Quotation":
+		return []
 
 	if doctype in ["Supplier Quotation", "Purchase Invoice"]:
-		filters.append((doctype, "docstatus", "<", 2))
+		filters["docstatus"] = ["<", "2"]
 	elif doctype in ["Quotation"]:
-		filters.append((doctype, "docstatus", "<", 2))
-		filters.append(("workflow_state", "in", ["Ready for Customer Review", "Approved"]))
+		filters["docstatus"] = ["<", "2"]
+		filters["workflow_state"] = ["in", ["Ready for Customer Review", "Approved"]]
 	else:
-		filters.append((doctype, "docstatus", "=", 1))
+		filters["docstatus"] = ["1", "1"]
 
 	if (user != "Guest" and is_website_user()) or doctype == "Request for Quotation":
 		parties_doctype = (
@@ -148,14 +151,14 @@ def get_transaction_list(
 					linked_party = frappe.db.get_value("Customer", customer, "lead_name")
 					if linked_party:
 						customers.append(linked_party)
-				filters.append(("quotation_to", "in", ["Customer", "Lead"]))
-				filters.append(("party_name", "in", customers))
+				filters["quotation_to"] = ["in", ["Customer", "Lead"]]
+				filters["party_name"] = ["in", customers]
 			else:
-				filters.append(("customer", "in", customers))
+				filters["customer"] = ["in", customers]
 		elif suppliers:
-			filters.append(("supplier", "in", suppliers))
+			filters["supplier"] = ["in", suppliers]
 		elif leads:
-			filters.append(("party_name", "in", leads))
+			filters["party_name"] = ["in", leads]
 		elif not custom:
 			return []
 
@@ -168,7 +171,7 @@ def get_transaction_list(
 
 		if not customers and not suppliers and custom:
 			ignore_permissions = False
-			filters = []
+			filters = {}
 	transactions = get_list_for_transactions(
 		doctype,
 		txt,

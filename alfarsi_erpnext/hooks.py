@@ -18,7 +18,7 @@ app_license = "MIT"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/alfarsi_erpnext/css/alfarsi_erpnext.css"
-web_include_js = "alfarsi-erpnext.min.js"
+web_include_js = "alfarsi-erpnext.bundle.js"
 
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "alfarsi_erpnext/public/scss/website"
@@ -51,12 +51,15 @@ doctype_js = {
 # }
 
 # # website
-# update_website_context = [
-# 	"alfarsi_erpnext.alfarsi_erpnext.api.update_website_context",
-# ]
+update_website_context = [
+	"alfarsi_erpnext.alfarsi_erpnext.api.update_website_context",
+]
+
+my_account_context = "erpnext.e_commerce.shopping_cart.utils.update_my_account_context"
+
 
 has_website_permission = {
-	"Quotation": "alfarsi_erpnext.alfarsi_erpnext.api.has_website_permission",
+	"Quotation": "alfarsi_erpnext.alfarsi_erpnext.api.alfarsi_has_website_permission",
 }
 
 extend_website_page_controller_context = {
@@ -72,10 +75,6 @@ override_doctype_class = {
 
 # automatically create page for each record of this doctype
 # website_generators = ["Quotation"]
-
-from alfarsi_erpnext.alfarsi_erpnext.api import get_quotation_list_context as _get_quotation_list_context
-from erpnext.selling.doctype.quotation import quotation as _quotation
-_quotation.get_list_context = _get_quotation_list_context
 
 
 # from erpnext.controllers import website_list_for_contact
@@ -121,7 +120,7 @@ _quotation.get_list_context = _get_quotation_list_context
 doc_events = {
 	"Lead": {
 		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead",
-		"autoname": "alfarsi_erpnext.alfarsi_erpnext.customer.validate_email"
+		"autoname": "alfarsi_erpnext.alfarsi_erpnext.customer.validate_email",
 	}
 }
 on_login = "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead_on_login"

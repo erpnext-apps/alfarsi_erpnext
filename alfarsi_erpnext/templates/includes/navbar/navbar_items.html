@@ -36,20 +36,12 @@
 					frappe.call('erpnext.e_commerce.api.get_guest_redirect_on_action').then((res) => {
 						window.location.href = res.message || "/login";
 					});
-				} else {
-					frappe.require('/assets/js/alfarsi-erpnext.min.js', () => {
-						new erpnext.QuickOrder();
-					});
-				}
+				} 
 			});
 
 			let is_item_group_page = $(".item-group-content").data("item-group");
 			let is_products_page = window.location.pathname === "/all-products"
-			if( !is_products_page && !is_item_group_page) {
-				frappe.require('/assets/js/alfarsi-erpnext.min.js', () => {
-					new erpnext.NavSearch();
-				});
-			}
+			
 		});
 	</script>
 
