@@ -380,7 +380,6 @@ def _get_cart_quotation(party=None, quote_identifier=None):
 		qdoc.run_method("set_missing_values")
 		apply_cart_settings(party, qdoc)
 
-	# import pdb; pdb.set_trace()
 	if frappe.session.user == "Guest":
 		for item in qdoc.items:
 			item.rate = 0

@@ -75,16 +75,7 @@ def transfer_quote_to_lead_on_login(login_manager, method=None):
     if len(customer) > 0:
         matching_customer = frappe.get_doc("Customer", customer[0])
         quotation_to = "Customer"
-    
-    if not matching_customer:
-        leads = frappe.get_all(
-            "Lead", filters={"email_id": frappe.session.user}
-        )
-        leads = [lead.name for lead in leads]
-        if len(leads) > 0:
-            matching_customer = frappe.get_doc("Lead", customer[0])
-            quotation_to = "Lead"
-
+  
     if not matching_customer:
         return
 

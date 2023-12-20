@@ -123,7 +123,7 @@ doc_events = {
 		"autoname": "alfarsi_erpnext.alfarsi_erpnext.customer.validate_email",
 	}
 }
-on_login = "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead_on_login"
+on_session_creation = "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead_on_login"
 
 # Scheduled Tasks
 # ---------------
