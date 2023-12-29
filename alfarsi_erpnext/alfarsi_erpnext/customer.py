@@ -134,7 +134,7 @@ def create_user_from_lead(email, lead_name, docname=None):
         for quote in frappe.db.get_list('Quotation', {'party_name': docname, 'docstatus': 0}, ['name', 'customer_name']):
             frappe.db.set_value('Quotation', quote.name, 'owner', user.name)
             frappe.db.set_value('Quotation', quote.name, 'modified_by', user.name)
-            frappe.rename_doc('Quotation', quote.name, quote.customer_name)
+            frappe.db.set_value('Quotation', quote.name, 'title', quote.customer_name)
         return
 
     user = frappe.get_doc({
