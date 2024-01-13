@@ -64,21 +64,41 @@
 				{% set disabled = 'disabled' if d.is_free_item else '' %}
 				<div class="input-group number-spinner mt-1 mb-4">
 					<span class="input-group-prepend d-sm-inline-block">
-						<button class="btn cart-btn" data-dir="dwn" {{ disabled }}>
+						<button class="btn cart-btn" data-dir="dwn">
 							{{ '–' if not d.is_free_item else ''}}
 						</button>
 					</span>
 
 					<input class="form-control text-center cart-qty" value="{{ d.get_formatted('qty') }}" data-item-code="{{ d.item_code }}"
-						style="max-width: 70px;" {{ disabled }}>
+						style="max-width: 70px;">
 
 					<span class="input-group-append d-sm-inline-block">
-						<button class="btn cart-btn" data-dir="up" {{ disabled }}>
+						<button class="btn cart-btn" data-dir="up">
 							{{ '+' if not d.is_free_item else ''}}
 						</button>
 					</span>
 					</div>
-
+				<div>
+					{% if not d.is_free_item %}
+						<div class="confirm-cart-item column-sm-view d-flex" data-item-code="{{ d.item_code }}" style = "border-radius: 6px;
+						border: 1px solid var(--gray-100);
+						width: 100px;
+						height: 28px;
+						font-weight: 100;
+						color: var(--gray-700);
+						background-color: var(--gray-100);
+						float: right;
+						cursor: pointer;
+						margin-top: .25rem;
+						margin-left: .25rem;
+						margin-right: .25rem;
+						justify-content: center;">
+							<span>
+								Update
+							</span>
+						</div>
+					{% endif %}
+				</div>
 				<div>
 					{% if not d.is_free_item %}
 						<div class="remove-cart-item column-sm-view d-flex" data-item-code="{{ d.item_code }}">
@@ -91,7 +111,7 @@
 							</span>
 						</div>
 					{% endif %}
-					</div>
+				</div>
 			</div>
 
 
@@ -111,3 +131,27 @@
 		{% endif %}
 	</tr>
 {% endfor %}
+
+<script>
+	frappe.ready(() => {
+		$(".page_content").on('click', '.number-spinner span button.cart-btn', function () {
+			var btn = $(this),
+				input = btn.closest('.number-spinner').find('input'),
+				oldValue = input.val().trim(),
+				newVal = 0;
+
+			if (btn.attr('data-dir') == 'up') {
+				newVal = Number.parseInt(oldValue) + 1;
+			} else if (btn.attr('data-dir') == 'dwn')  {
+				if (Number.parseInt(oldValue) > 1) {
+					newVal = Number.parseInt(oldValue) - 1;
+				}
+				else {
+					newVal = Number.parseInt(oldValue);
+				}
+			}
+			input.val(newVal);
+		});
+	});
+
+</script>
