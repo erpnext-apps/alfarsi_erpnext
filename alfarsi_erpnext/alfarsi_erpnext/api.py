@@ -4,8 +4,8 @@ import frappe
 from frappe.utils import cint, cstr
 from frappe import _
 
-from erpnext.e_commerce.shopping_cart.cart import _get_cart_quotation, _set_price_list
-from erpnext.e_commerce.doctype.e_commerce_settings.e_commerce_settings import (
+from webshop.webshop.shopping_cart.cart import _get_cart_quotation, _set_price_list
+from webshop.webshop.doctype.webshop_settings.webshop_settings import (
 	get_shopping_cart_settings,
 )
 from erpnext.utilities.product import get_price as get_desk_price

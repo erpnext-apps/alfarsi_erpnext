@@ -224,8 +224,8 @@
   };
 
   // ../alfarsi_erpnext/alfarsi_erpnext/public/js/shopping_cart.js
-  frappe.provide("erpnext.e_commerce.shopping_cart");
-  var shopping_cart = erpnext.e_commerce.shopping_cart;
+  frappe.provide("webshop.webshop.shopping_cart");
+  var shopping_cart = webshop.webshop.shopping_cart;
   $.extend(shopping_cart, {
     show_shoppingcart_dropdown: function() {
       $(".shopping-cart").on("shown.bs.dropdown", function() {
@@ -335,7 +335,7 @@
     },
     show_cart_navbar: function() {
       frappe.call({
-        method: "erpnext.e_commerce.doctype.e_commerce_settings.e_commerce_settings.is_cart_enabled",
+        method: "webshop.webshop.doctype.webshop_settings.webshop_settings.is_cart_enabled",
         callback: function(r) {
           $(".shopping-cart").toggleClass("hidden", r.message ? false : true);
         }
@@ -384,14 +384,14 @@
   });
 
   // ../alfarsi_erpnext/alfarsi_erpnext/public/js/wishlist.js
-  frappe.provide("erpnext.e_commerce.wishlist");
-  var wishlist = erpnext.e_commerce.wishlist;
+  frappe.provide("webshop.webshop.wishlist");
+  var wishlist = webshop.webshop.wishlist;
   $.extend(wishlist, {
     wishlist_action(btn) {
       const $wish_icon = btn.find(".wish-icon");
       let me = this;
       let success_action = function() {
-        erpnext.e_commerce.wishlist.set_wishlist_count(true);
+        webshop.webshop.wishlist.set_wishlist_count(true);
       };
       if ($wish_icon.hasClass("wished")) {
         btn.removeClass("like-animate");
@@ -414,9 +414,9 @@
       }
     },
     add_remove_from_wishlist(action, args, success_action, failure_action, async = false) {
-      let method = "erpnext.e_commerce.doctype.wishlist.wishlist.add_to_wishlist";
+      let method = "webshop.webshop.doctype.wishlist.wishlist.add_to_wishlist";
       if (action === "remove") {
-        method = "erpnext.e_commerce.doctype.wishlist.wishlist.remove_from_wishlist";
+        method = "webshop.webshop.doctype.wishlist.wishlist.remove_from_wishlist";
         frappe.call({
           async,
           type: "POST",
@@ -441,4 +441,4 @@
     }
   });
 })();
-//# sourceMappingURL=alfarsi-erpnext.bundle.ENQ4DPMD.js.map
+//# sourceMappingURL=alfarsi-erpnext.bundle.P54MIN56.js.map

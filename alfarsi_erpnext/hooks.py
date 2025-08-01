@@ -55,7 +55,7 @@ update_website_context = [
 	"alfarsi_erpnext.alfarsi_erpnext.api.update_website_context",
 ]
 
-my_account_context = "erpnext.e_commerce.shopping_cart.utils.update_my_account_context"
+my_account_context = "webshop.webshop.shopping_cart.utils.update_my_account_context"
 
 
 has_website_permission = {

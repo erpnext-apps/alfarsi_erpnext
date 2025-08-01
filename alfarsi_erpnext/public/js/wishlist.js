@@ -1,5 +1,5 @@
-frappe.provide("erpnext.e_commerce.wishlist");
-var wishlist = erpnext.e_commerce.wishlist;
+frappe.provide("webshop.webshop.wishlist");
+var wishlist = webshop.webshop.wishlist;
 
 $.extend(wishlist, {
 	wishlist_action(btn) {
@@ -15,7 +15,7 @@ $.extend(wishlist, {
 		// }
 
 		let success_action = function() {
-			erpnext.e_commerce.wishlist.set_wishlist_count(true);
+			webshop.webshop.wishlist.set_wishlist_count(true);
 		};
 
 		if ($wish_icon.hasClass('wished')) {
@@ -56,9 +56,9 @@ $.extend(wishlist, {
 		// 	}
 		// 	this.redirect_guest();
 		// } else {
-		let method = "erpnext.e_commerce.doctype.wishlist.wishlist.add_to_wishlist";
+		let method = "webshop.webshop.doctype.wishlist.wishlist.add_to_wishlist";
 		if (action === "remove") {
-			method = "erpnext.e_commerce.doctype.wishlist.wishlist.remove_from_wishlist";
+			method = "webshop.webshop.doctype.wishlist.wishlist.remove_from_wishlist";
 			// }
 
 			frappe.call({

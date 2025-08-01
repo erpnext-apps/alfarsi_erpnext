@@ -1,5 +1,5 @@
-frappe.provide("erpnext.e_commerce.shopping_cart");
-var shopping_cart = erpnext.e_commerce.shopping_cart;
+frappe.provide("webshop.webshop.shopping_cart");
+var shopping_cart = webshop.webshop.shopping_cart;
 
 $.extend(shopping_cart, {
 	show_shoppingcart_dropdown: function() {
@@ -22,7 +22,7 @@ $.extend(shopping_cart, {
 		// 	// if (localStorage) {
 		// 	// 	localStorage.setItem("last_visited", window.location.pathname);
 		// 	// }
-		// 	// frappe.call('erpnext.e_commerce.api.get_guest_redirect_on_action').then((res) => {
+		// 	// frappe.call('webshop.webshop.api.get_guest_redirect_on_action').then((res) => {
 		// 	// 	window.location.href = res.message || "/login";
 		// 	// });
 		// 	pass
@@ -136,7 +136,7 @@ $.extend(shopping_cart, {
 
 	show_cart_navbar: function () {
 		frappe.call({
-			method: "erpnext.e_commerce.doctype.e_commerce_settings.e_commerce_settings.is_cart_enabled",
+			method: "webshop.webshop.doctype.webshop_settings.webshop_settings.is_cart_enabled",
 			callback: function(r) {
 				$(".shopping-cart").toggleClass('hidden', r.message ? false : true);
 			}
@@ -157,7 +157,7 @@ $.extend(shopping_cart, {
 			// 	if (localStorage) {
 			// 		localStorage.setItem("last_visited", window.location.pathname);
 			// 	}
-			// 	frappe.call('erpnext.e_commerce.api.get_guest_redirect_on_action').then((res) => {
+			// 	frappe.call('webshop.webshop.api.get_guest_redirect_on_action').then((res) => {
 			// 		window.location.href = res.message || "/login";
 			// 	});
 			// 	return;
