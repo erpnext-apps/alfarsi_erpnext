@@ -117,13 +117,13 @@ override_doctype_class = {
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-	"Lead": {
-		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead",
-		"autoname": "alfarsi_erpnext.alfarsi_erpnext.customer.validate_email",
-	}
-}
-on_session_creation = "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead_on_login"
+# doc_events = {
+# 	"Lead": {
+# 		"after_insert": "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead",
+# 		"autoname": "alfarsi_erpnext.alfarsi_erpnext.customer.validate_email",
+# 	}
+# }
+# on_session_creation = "alfarsi_erpnext.alfarsi_erpnext.customer.transfer_quote_to_lead_on_login"
 
 # Scheduled Tasks
 # ---------------

@@ -1,129 +1,129 @@
 import frappe
 from frappe import _, msgprint
-from alfarsi_erpnext.alfarsi_erpnext.cart import get_party, _get_cart_quotation
-from frappe.contacts.doctype.address.address import get_address_display
+# from alfarsi_erpnext.alfarsi_erpnext.cart import get_party, _get_cart_quotation
+# from frappe.contacts.doctype.address.address import get_address_display
 
 
-def transfer_quote_to_lead(doc, method=None):
-    party = get_party('unapprovedlead@alfarsi.me')
-    quote_identifier = frappe.request.cookies.get('guest_cart')
+# def transfer_quote_to_lead(doc, method=None):
+#     party = get_party('unapprovedlead@alfarsi.me')
+#     quote_identifier = frappe.request.cookies.get('guest_cart')
 
-    quotation = _get_cart_quotation(party, quote_identifier)
-    if not quotation.name:
-        return
+#     quotation = _get_cart_quotation(party, quote_identifier)
+#     if not quotation.name:
+#         return
     
-    contact = frappe.new_doc("Contact")
-    contact.first_name = doc.lead_name
-    contact.add_email(doc.email_id, is_primary=True)
-    contact.add_phone(doc.mobile_no, is_primary_phone=True)
+#     contact = frappe.new_doc("Contact")
+#     contact.first_name = doc.lead_name
+#     contact.add_email(doc.email_id, is_primary=True)
+#     contact.add_phone(doc.mobile_no, is_primary_phone=True)
 
-    contact.append("links", {"link_doctype": "Lead", "link_name": doc.name})
+#     contact.append("links", {"link_doctype": "Lead", "link_name": doc.name})
 
-    contact.flags.ignore_mandatory = True
-    contact.save(ignore_permissions=True)
+#     contact.flags.ignore_mandatory = True
+#     contact.save(ignore_permissions=True)
 
-    quote_doc = frappe.get_doc('Quotation', quotation.name)
-    quote_doc.quotation_to = "Lead"
-    quote_doc.party_name = doc.name
-    quote_doc.customer_name = doc.company_name
-    quote_doc.is_lead_registered = 1
+#     quote_doc = frappe.get_doc('Quotation', quotation.name)
+#     quote_doc.quotation_to = "Lead"
+#     quote_doc.party_name = doc.name
+#     quote_doc.customer_name = doc.company_name
+#     quote_doc.is_lead_registered = 1
 
-    address_names = frappe.db.get_all(
-        "Dynamic Link",
-        fields=("parent"),
-        filters=dict(parenttype="Address", link_doctype="Lead", link_name=doc.name),
-    )
+#     address_names = frappe.db.get_all(
+#         "Dynamic Link",
+#         fields=("parent"),
+#         filters=dict(parenttype="Address", link_doctype="Lead", link_name=doc.name),
+#     )
 
-    if address_names:
-        address_name = address_names[0].name
-        address_doc = frappe.get_doc("Address", address_names[0].name).as_dict()
-        address_display = get_address_display(address_doc)
+#     if address_names:
+#         address_name = address_names[0].name
+#         address_doc = frappe.get_doc("Address", address_names[0].name).as_dict()
+#         address_display = get_address_display(address_doc)
 
-        quote_doc.customer_address = address_name
-        quote_doc.address_display = address_display
-        quote_doc.shipping_address_name = address_name
+#         quote_doc.customer_address = address_name
+#         quote_doc.address_display = address_display
+#         quote_doc.shipping_address_name = address_name
     
-    contact_names = frappe.db.get_all(
-        "Dynamic Link",
-        fields=("parent"),
-        filters=dict(parenttype="Contact", link_doctype="Lead", link_name=doc.name),
-    )
+#     contact_names = frappe.db.get_all(
+#         "Dynamic Link",
+#         fields=("parent"),
+#         filters=dict(parenttype="Contact", link_doctype="Lead", link_name=doc.name),
+#     )
 
-    if contact_names:
-        contact_name = contact_names[0].name
-        quote_doc.contact_person = contact_name
-        quote_doc.contact_display = None
+#     if contact_names:
+#         contact_name = contact_names[0].name
+#         quote_doc.contact_person = contact_name
+#         quote_doc.contact_display = None
 
-    quote_doc.save()
-    frappe.local.cookie_manager.set_cookie("cart_count", 0)
+#     quote_doc.save()
+#     frappe.local.cookie_manager.set_cookie("cart_count", 0)
 
-def transfer_quote_to_lead_on_login(login_manager, method=None):
-    party = get_party('unapprovedlead@alfarsi.me')
-    quote_identifier = frappe.request.cookies.get('guest_cart')
-    if not quote_identifier:
-        return
+# def transfer_quote_to_lead_on_login(login_manager, method=None):
+#     party = get_party('unapprovedlead@alfarsi.me')
+#     quote_identifier = frappe.request.cookies.get('guest_cart')
+#     if not quote_identifier:
+#         return
     
-    open_quote = frappe.db.get_value("Quotation", {"session_uuid": quote_identifier, "is_lead_registered": 0}, "name")
-    if not open_quote:
-        return
+#     open_quote = frappe.db.get_value("Quotation", {"session_uuid": quote_identifier, "is_lead_registered": 0}, "name")
+#     if not open_quote:
+#         return
 
-    customer = frappe.get_all(
-        "Customer", filters={"email_id": frappe.session.user}
-    )
-    customer = [customer.name for customer in customer]
-    matching_customer = None
-    if len(customer) > 0:
-        matching_customer = frappe.get_doc("Customer", customer[0])
-        quotation_to = "Customer"
+#     customer = frappe.get_all(
+#         "Customer", filters={"email_id": frappe.session.user}
+#     )
+#     customer = [customer.name for customer in customer]
+#     matching_customer = None
+#     if len(customer) > 0:
+#         matching_customer = frappe.get_doc("Customer", customer[0])
+#         quotation_to = "Customer"
   
-    if not matching_customer:
-        return
+#     if not matching_customer:
+#         return
 
-    quotation = _get_cart_quotation(party, quote_identifier)
-    if not quotation:
-        return
-    quote_doc = frappe.get_doc('Quotation', quotation.name)
-    quote_doc.quotation_to = quotation_to
-    quote_doc.party_name = matching_customer.name
-    quote_doc.customer_name = matching_customer.name
-    quote_doc.is_lead_registered = 1
+#     quotation = _get_cart_quotation(party, quote_identifier)
+#     if not quotation:
+#         return
+#     quote_doc = frappe.get_doc('Quotation', quotation.name)
+#     quote_doc.quotation_to = quotation_to
+#     quote_doc.party_name = matching_customer.name
+#     quote_doc.customer_name = matching_customer.name
+#     quote_doc.is_lead_registered = 1
 
-    address_names = frappe.db.get_all(
-        "Dynamic Link",
-        fields=("parent"),
-        filters=dict(parenttype="Address", link_doctype="Customer", link_name=matching_customer.name),
-    )
+#     address_names = frappe.db.get_all(
+#         "Dynamic Link",
+#         fields=("parent"),
+#         filters=dict(parenttype="Address", link_doctype="Customer", link_name=matching_customer.name),
+#     )
 
-    if address_names:
-        address_name = address_names[0].name
-        address_doc = frappe.get_doc("Address", address_names[0].name).as_dict()
-        address_display = get_address_display(address_doc)
+#     if address_names:
+#         address_name = address_names[0].name
+#         address_doc = frappe.get_doc("Address", address_names[0].name).as_dict()
+#         address_display = get_address_display(address_doc)
 
-        quote_doc.customer_address = address_name
-        quote_doc.address_display = address_display
-        quote_doc.shipping_address_name = address_name
+#         quote_doc.customer_address = address_name
+#         quote_doc.address_display = address_display
+#         quote_doc.shipping_address_name = address_name
     
-    contact_names = frappe.db.get_all(
-        "Dynamic Link",
-        fields=("parent"),
-        filters=dict(parenttype="Contact", link_doctype="Customer", link_name=matching_customer.name),
-    )
+#     contact_names = frappe.db.get_all(
+#         "Dynamic Link",
+#         fields=("parent"),
+#         filters=dict(parenttype="Contact", link_doctype="Customer", link_name=matching_customer.name),
+#     )
 
-    if contact_names:
-        contact_name = contact_names[0].name
-        quote_doc.contact_person = contact_name
-        quote_doc.contact_display = None
+#     if contact_names:
+#         contact_name = contact_names[0].name
+#         quote_doc.contact_person = contact_name
+#         quote_doc.contact_display = None
 
-    quote_doc.save()
-    frappe.local.cookie_manager.set_cookie("cart_count", 0)
+#     quote_doc.save()
+#     frappe.local.cookie_manager.set_cookie("cart_count", 0)
 
-def validate_email(doc, method=None):
-    duplicate_leads = frappe.get_all(
-        "Lead", filters={"email_id": doc.email_id, "name": ["!=", doc.name]}
-    )
-    duplicate_leads = [lead.name for lead in duplicate_leads]
-    if duplicate_leads:
-        frappe.throw("An account with this email id already exists. Please login")
+# def validate_email(doc, method=None):
+#     duplicate_leads = frappe.get_all(
+#         "Lead", filters={"email_id": doc.email_id, "name": ["!=", doc.name]}
+#     )
+#     duplicate_leads = [lead.name for lead in duplicate_leads]
+#     if duplicate_leads:
+#         frappe.throw("An account with this email id already exists. Please login")
 
 
 @frappe.whitelist()
